@@ -6,7 +6,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
-source _common.sh
+#source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -76,17 +76,18 @@ ynh_app_setting_set $app is_public $is_public
 ###		- Remove the section "CLOSE A PORT" in the remove script
 
 # Find a free port
-port=$(ynh_find_port 8096)
+port=$(ynh_find_port 9987)
 # Open this port
 yunohost firewall allow --no-upnp TCP $port 2>&1
 ynh_app_setting_set $app port $port
 
 #==============================================
-# INSTALL EMBY
+# INSTALL TEAMSPEAK
 #==============================================
 
-wget --no-verbose 'https://github.com/MediaBrowser/Emby.Releases/releases/download/3.5.3.0/emby-server-deb_3.5.3.0_amd64.deb'
-dpkg --install emby-server-deb_3.5.3.0_amd64.deb
+mkdir /home/yunohost.app/teamspeak3
+cd /home/yunohost.app/teamspeak3
+wget -Nnv https://github.com/liberodark/TS3-Update/releases/download/1.9.5/update.sh && chmod +x update.sh; ./update.sh
 
 #=================================================
 # NGINX CONFIGURATION
