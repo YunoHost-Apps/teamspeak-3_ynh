@@ -14,7 +14,10 @@ TeamSpeak 3 Server
  1. App can be installed by YunoHost **admin web-interface** or by **running following command**:
 
          $ sudo yunohost app install https://github.com/YunoHost-Apps/teamspeak-3_ynh
- 1. Admin username is : **root**.
+ 
+ 1. Run Server in SSH.
+ 
+	 $ sh /home/yunohost.app/teamspeak3/ts3server_startscript.sh start
 
  
 ### Upgrade this package:

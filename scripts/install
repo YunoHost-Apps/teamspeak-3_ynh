@@ -149,5 +149,5 @@ if [ $is_public -eq 1 ]; then
 fi
 
 # Reload services
-#sh /home/yunohost.app/teamspeak3/ts3server_startscript.sh start
+
 systemctl restart nginx
