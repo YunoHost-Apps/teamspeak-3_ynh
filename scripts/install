@@ -85,18 +85,18 @@ ynh_app_setting_set $app port $port
 # INSTALL TEAMSPEAK
 #==============================================
 
-mkdir /home/yunohost.app/teamspeak3
-cd /home/yunohost.app/teamspeak3
-wget -O ts3.tar http://dl.4players.de/ts/releases/3.5.0/teamspeak3-server_linux_amd64-3.5.0.tar.bz2
-tar -xf ts3.tar
-rm ts3.tar
+mkdir $HOME/yunohost.app/teamspeak3
+cd $HOME/yunohost.app/teamspeak3
+wget -P $HOME/yunohost.app/teamspeak3/ -O ts3.tar http://dl.4players.de/ts/releases/3.5.0/teamspeak3-server_linux_amd64-3.5.0.tar.bz2
+tar -xf $HOME/yunohost.app/teamspeak3/ts3.tar
+rm $HOME/yunohost.app/teamspeak3/ts3.tar
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
 
 # Create a dedicated nginx config
-ynh_add_nginx_config
+#ynh_add_nginx_config
 
 #=================================================
 # CREATE DEDICATED USER
