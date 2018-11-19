@@ -86,9 +86,11 @@ ynh_app_setting_set $app port $port
 #==============================================
 
 mkdir /home/yunohost.app/teamspeak3
+cd /home/yunohost.app/teamspeak3
 wget -P /home/yunohost.app/teamspeak3/ -O ts3.tar http://dl.4players.de/ts/releases/3.5.0/teamspeak3-server_linux_amd64-3.5.0.tar.bz2
 tar -xf /home/yunohost.app/teamspeak3/ts3.tar --strip-components=1
 rm /home/yunohost.app/teamspeak3/ts3.tar
+cd /var/cache/yunohost/from_file/teamspeak-3_ynh-master/
 
 #=================================================
 # NGINX CONFIGURATION
