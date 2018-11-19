@@ -135,7 +135,7 @@ ynh_system_user_create $app
 ### that really need such authorization.
 
 # Set permissions to app files
-#chown -R root: /etc/loolwsd
+chown -R admin:1007 /home/yunohost.app/teamspeak3
 
 
 #=================================================
