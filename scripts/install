@@ -108,7 +108,7 @@ ynh_system_user_create $app
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
-#cp -a ../conf/onlyoffice-documentserver.conf /etc/onlyoffice/documentserver/nginx/onlyoffice-documentserver.conf
+cp -a ../conf/.ts3server_license_accepted /home/yunohost.app/teamspeak3/.ts3server_license_accepted
 #ynh_replace_string "__NEXTCLOUDDOMAIN__" "$nextcloud_domain" "/etc/loolwsd/loolwsd.xml"
 #ynh_replace_string "__PASSWORD__" "$password" "/etc/loolwsd/loolwsd.xml"
 
