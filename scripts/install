@@ -133,6 +133,7 @@ sudo chmod 750 "$app_root"
 sudo find ${app_root}/ -type d -print0 | sudo xargs -0 chmod 750
 sudo find ${app_root}/ -type f -print0 | sudo xargs -0 chmod 640
 sudo find ${app_root}/ -type f -name "*.sh" -print0 -o -name "ts3server" -print0 | sudo xargs -0 chmod 750
+touch ${app_root}/.ts3server_license_accepted
 
 ##
 ## Finishing touches
@@ -153,5 +154,5 @@ ynh_app_setting_set $app sapass $sapass
 # Let's use the initial log file to get the admin token
 # Wait for generation of file
 sleep 5
-sudo cat "${server_root}/logs/ts3server_1.log" | sed -n -e 's/.*token=/Server Admin Token: /p'
+sudo cat "${server_root}/logs/ts3server_*" | sed -n -e 's/.*token=/Server Admin Token: /p'
 echo "Server Query Admin: serveradmin ${sapass}"
