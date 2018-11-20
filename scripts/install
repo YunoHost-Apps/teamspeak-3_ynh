@@ -1,154 +1,157 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
+# causes the shell to exit if any subcommand or pipeline returns a non-zero status
+set -eu
 
-#source _common.sh
+# YunoHost app helpers
 source /usr/share/yunohost/helpers
 
-#=================================================
-# MANAGE SCRIPT FAILURE
-#=================================================
-
-ynh_clean_setup () {
-	### Remove this function if there's nothing to clean before calling the remove script.
-	true
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-#=================================================
-# RETRIEVE ARGUMENTS FROM THE MANIFEST
-#=================================================
+# App specific common variables and helpers
+source ./_common.sh
 
 # Retrieve arguments
-domain=$YNH_APP_ARG_DOMAIN
-path_url=$YNH_APP_ARG_PATH
-is_public=$YNH_APP_ARG_IS_PUBLIC
-
-### If it's a multi-instance app, meaning it can be installed several times independently
-### The id of the app as stated in the manifest is available as $YNH_APP_ID
-### The instance number is available as $YNH_APP_INSTANCE_NUMBER (equals "1", "2", ...)
-### The app instance name is available as $YNH_APP_INSTANCE_NAME
-###    - the first time the app is installed, YNH_APP_INSTANCE_NAME = ynhexample
-###    - the second time the app is installed, YNH_APP_INSTANCE_NAME = ynhexample__2
-###    - ynhexample__{N} for the subsequent installations, with N=3,4, ...
-### The app instance name is probably what interests you most, since this is
-### guaranteed to be unique. This is a good unique identifier to define installation path,
-### db names, ...
 app=$YNH_APP_INSTANCE_NAME
+admin=$YNH_APP_ARG_ADMIN
+arch=$YNH_APP_ARG_ARCH
+dbtype=$YNH_APP_ARG_DBTYPE
+declare -A ports=( [voice]=$YNH_APP_ARG_PORT_VOICE \
+				   [query]=$YNH_APP_ARG_PORT_QUERY \
+				   [filetr]=$YNH_APP_ARG_PORT_FILETR )
 
-#=================================================
-# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
-#=================================================
+# Application specific variables
+dbname=$app
+dbuser=$app
+dbpass=$(ynh_string_random 16)
+sapass=$(ynh_string_random 8)
+app_root="/home/yunohost.app/$app"
+server_root="${app_root}/server"
 
-### If the app uses nginx as web server (written in HTML/PHP in most cases), the final path should be "/var/www/$app".
-### If the app provides an internal web server (or uses another application server such as uwsgi), the final path should be "/opt/yunohost/$app"
-final_path=/opt/yunohost/$app
-test ! -e "$final_path" || ynh_die "This path already contains a folder"
+##
+## Beginning checks
+## 
 
-# Normalize the url path syntax
-path_url=$(ynh_normalize_url_path $path_url)
+# Helps keep removal script simpler and more accurate by removing
+#  the need for checks in BOTH install and remove scripts
+ynh_app_setting_set $app chk_fail 0
 
-# Check web path availability
-ynh_webpath_available $domain $path_url
-# Register (book) web path
-ynh_webpath_register $app $domain $path_url
+# TODO: check if teamspeak is already running
+# TODO: Domain/path
 
-#=================================================
-# STORE SETTINGS FROM MANIFEST
-#=================================================
+# YunoHost admin user
+ynh_user_exists $admin \
+  || ynh_die "The chosen admin user does not exist."
+  
+# System account user
+ynh_system_user_exists $app \
+  && ynh_die "$app system user account already exists. You should safely remove the user account before installing this app."
+  
+# Server root directory
+[[ -d "$server_root" ]] \
+  && ynh_die "The directory '$server_root' already exists. You should safely delete it before installing this app."
+  
+# MySQL
+# TODO: check if user exists (to prevent deletion in remove script)
+ynh_mysql_execute_as_root '' $dbname > /dev/null 2>&1 \
+  && ynh_die "SQL database already exists. You should safely delete it before installing this app."
 
-ynh_app_setting_set $app domain $domain
-ynh_app_setting_set $app path $path_url
-ynh_app_setting_set $app is_public $is_public
+# Ports
+for i in "${ports[@]}"; do
+	if ! [[ $i != *[!0-9]* ]]; then
+		ynh_die "Only numbers are allowed for port definitions."
+	elif [[ $i -le 1024 ]]; then
+		ynh_die "Ports must be higher than 1024."
+	fi	
+done
 
-#=================================================
-# FIND AND OPEN A PORT
-#=================================================
+# Remove checks setting as it's unecessary - setup should run perfectly
+ynh_app_setting_delete $app chk_fail
 
-### Use these lines if you have to open a port for the application
-### `ynh_find_port` will find the first available port starting from the given port.
-### If you're not using these lines:
-###		- Remove the section "CLOSE A PORT" in the remove script
+##
+## Beginning setup
+##
 
-# Find a free port
-port=$(ynh_find_port 9987)
-# Open this port
-yunohost firewall allow --no-upnp TCP $port 2>&1
-ynh_app_setting_set $app port $port
+# Admin user
+ynh_app_setting_set $app admin $admin
 
-#==============================================
-# INSTALL TEAMSPEAK
-#==============================================
+# System account user
+sudo useradd -c "$app system account" -d "$server_root" --system --user-group $app \
+  || ynh_die "Unable to create $app system account."
 
-mkdir /home/yunohost.app/teamspeak3
-cd /home/yunohost.app/teamspeak3
-wget -P /home/yunohost.app/teamspeak3/ -O ts3.tar http://dl.4players.de/ts/releases/3.5.0/teamspeak3-server_linux_amd64-3.5.0.tar.bz2
-tar -xf /home/yunohost.app/teamspeak3/ts3.tar --strip-components=1
-rm /home/yunohost.app/teamspeak3/ts3.tar
-cd /var/cache/yunohost/from_file/teamspeak-3_ynh-master/
+# Server root directory (must set ownership before extraction)
+sudo mkdir -p "$server_root"
+sudo chown -R $app: "$server_root"
+ynh_app_setting_set $app server_root "$server_root"
 
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
+# MySQL
+ynh_mysql_create_db $dbname $dbuser $dbpass
+ynh_app_setting_set $app mysqlpwd $dbpass
 
-# Create a dedicated nginx config
-#ynh_add_nginx_config
+# Ports
+sudo yunohost firewall allow --no-reload UDP ${ports[voice]}
+sudo yunohost firewall allow --no-reload TCP ${ports[query]}
+sudo yunohost firewall allow TCP ${ports[filetr]}
 
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
+##
+## Installation and Ownership/Permissions
+##
 
-# Create a system user
-ynh_system_user_create $app
+# Copy source files to server root
+extract_ts3server $arch "$server_root" $app
 
-#=================================================
-# MODIFY A CONFIG FILE
-#=================================================
-cp -a ../conf/.ts3server_license_accepted /home/yunohost.app/teamspeak3/.ts3server_license_accepted
-#ynh_replace_string "__NEXTCLOUDDOMAIN__" "$nextcloud_domain" "/etc/loolwsd/loolwsd.xml"
-#ynh_replace_string "__PASSWORD__" "$password" "/etc/loolwsd/loolwsd.xml"
+# Write values to config templates
+# TODO: determine if I want to only fill out used template
+sed -i "s@DBUSER@$dbuser@g" ../config/ts3db_mariadb.ini
+sed -i "s@DBPW@$dbpass@g" ../config/ts3db_mariadb.ini
+sed -i "s@APP@$app@g" ../config/ts3db_mariadb.ini
+sed -i "s@TS_USER@$dbuser@g" ../config/ts3server.service
+sed -i "s@SERVER_ROOT@$server_root@g" ../config/ts3server.service
+sed -i "s@PT_VOICE@${ports[voice]}@g" ../config/ts3server_mariadb.ini
+sed -i "s@PT_QUERY@${ports[query]}@g" ../config/ts3server_mariadb.ini
+sed -i "s@PT_FILE@${ports[filetr]}@g" ../config/ts3server_mariadb.ini
+sed -i "s@PT_VOICE@${ports[voice]}@g" ../config/ts3server_sqlite.ini
+sed -i "s@PT_QUERY@${ports[query]}@g" ../config/ts3server_sqlite.ini
+sed -i "s@PT_FILE@${ports[filetr]}@g" ../config/ts3server_sqlite.ini
 
-#=================================================
-# STORE THE CONFIG FILE CHECKSUM
-#=================================================
-
-### `ynh_store_file_checksum` is used to store the checksum of a file.
-### That way, during the upgrade script, by using `ynh_backup_if_checksum_is_different`,
-### you can make a backup of this file before modifying it again if the admin had modified it.
-
-# Calculate and store the config file checksum into the app settings
-#ynh_store_file_checksum "/etc/onlyoffice/documentserver/nginx/onlyoffice-documentserver.conf"
-
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-### For security reason, any app should set the permissions to root: before anything else.
-### Then, if write authorization is needed, any access should be given only to directories
-### that really need such authorization.
-
-# Set permissions to app files
-chown -R admin:1007 /home/yunohost.app/teamspeak3
-
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-
-# If app is public, add url to SSOWat conf as skipped_uris
-if [ $is_public -eq 1 ]; then
-  # unprotected_uris allows SSO credentials to be passed anyway.
-  ynh_app_setting_set "$app" unprotected_uris "/"
+# Config file and necessary plugin installation
+if [[ $dbtype == "MariaDB" ]]; then
+	sudo cp "${server_root}/redist/libmariadb.so.2" "${server_root}/libmariadb.so.2"
+	sudo cp ../config/ts3db_mariadb.ini "${server_root}/ts3db_mariadb.ini"
+	sudo cp ../config/ts3server_mariadb.ini "${server_root}/ts3server.ini"
+else
+	sudo cp ../config/ts3server_sqlite.ini "${server_root}/ts3server.ini"
 fi
 
-# Reload services
+# Copy service file to respective location
+# TODO: Maybe replace with init.d
+sudo cp ../config/${app}.service /lib/systemd/system/${app}.service
+sudo systemctl daemon-reload
 
-systemctl restart nginx
+
+# Finalize ownerships and permissions
+sudo chown -R $app: "$app_root"
+sudo chmod 750 "$app_root"
+sudo find ${app_root}/ -type d -print0 | sudo xargs -0 chmod 750
+sudo find ${app_root}/ -type f -print0 | sudo xargs -0 chmod 640
+sudo find ${app_root}/ -type f -name "*.sh" -print0 -o -name "ts3server" -print0 | sudo xargs -0 chmod 750
+
+##
+## Finishing touches
+##
+
+# Enable and start service
+sudo systemctl enable ${app}.service
+sudo yunohost service add $app -l "${server_root}/logs/ts3server_1.log" "${server_root}/logs/ts3server_0.log"
+
+# Set serveradmin password and start
+sudo sh -c "echo serveradmin_password=${sapass} >> ${server_root}/ts3server.ini" \
+      || ynh_die "Could not set serveradmin password in config file. Aborting."
+sudo yunohost service start $app
+# Remove password from config file
+sudo sed -i '/serveradmin_password/d' "${server_root}/ts3server.ini"
+ynh_app_setting_set $app sapass $sapass
+
+# Let's use the initial log file to get the admin token
+# Wait for generation of file
+sleep 5
+sudo cat "${server_root}/logs/ts3server_1.log" | sed -n -e 's/.*token=/Server Admin Token: /p'
+echo "Server Query Admin: serveradmin ${sapass}"

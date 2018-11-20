@@ -1,0 +1,10 @@
+[Unit]
+Description=Teamspeak 3 Server
+After=network.target mysql.service
+
+[Service]
+User=TS_USER
+ExecStart=SERVER_ROOT/ts3server_minimal_runscript.sh start inifile=ts3server.ini
+
+[Install]
+WantedBy=multi-user.target

@@ -1,58 +1,73 @@
 {
-    "name": "TeamSpeak 3",
-    "id": "teamspeak",
-    "packaging_format": 1,
-    "description": {
-        "en": "TeamSpeak 3 package for YunoHost.",
-        "fr": "TeamSpeak 3 pour YunoHost."
-    },
-    "version": "3.5.0",
-    "url": "https://www.teamspeak.com",
-    "license": "free",
-    "maintainer": {
-        "name": "liberodark",
-        "email": "liberodark@gmail.com"
-    },
-    "requirements": {
-        "yunohost": ">= 2.7.2"
-    },
-    "multi_instance": true,
-    "services": [
-        "nginx",
-        "php5-fpm",
-        "mysql"
-    ],
+	"packaging_format": 1,
+	"id": "ts3server",
+	"name": "TeamSpeak 3 Server",
+	"description": {
+		"en": "Cross-platform voice communication server"
+	},
+	"url": "http://teamspeak.com/",
+	"license": "free",
+	"maintainer": {
+		"name": "MidgetMob",
+		"email": "jschoulzy@gmail.com",
+		"url": "https://github.com/MidgetMob"
+	},
+	"requirements": {
+		"yunohost": ">= 2.4.2"
+	},
+	"multi_instance": false,
+    "services": [ 
+		"mysql",
+		"nginx",
+		"php5-fpm"
+	],
     "arguments": {
-        "install": [{
-                "name": "domain",
-                "type": "domain",
-                "ask": {
-                    "en": "Choose a domain name for TeamSpeak",
-                    "fr": "Choisissez un nom de domaine pour TeamSpeak"
-                },
-                "example": "example.com"
-            },
-
+        "install" : [
             {
-                "name": "path",
-                "type": "path",
+				"name": "admin",
+				"type": "user",
+				"ask": {
+					"en": "Specify an admin user (must be an existing YunoHost user)"
+				},
+				"example": "caretaker"
+			},
+			{
+                "name": "arch",
                 "ask": {
-                    "en": "Choose a path for TeamSpeak /ts is accepted",
-                    "fr": "Choisissez un chemin pour TeamSpeak /ts est accepté"
+                    "en": "Choose an architecture (must match your server architecture)"
                 },
-                "example": "/ts",
-                "default": "/ts"
+                "choices": ["x86", "amd64"],
+                "default": "amd64"
             },
-            
-            {
-                "name": "is_public",
-                "type": "boolean",
+			{
+                "name": "dbtype",
                 "ask": {
-                    "en": "Is it a public site ?",
-                    "fr": "Est-ce un site public ?"
+                    "en": "Choose a database type"
                 },
-                "default": "true"
-            }
+                "choices": ["MariaDB", "SQLite"],
+                "default": "MariaDB"
+            },
+			{
+				"name": "port_voice",
+                "ask": {
+                    "en": "You may specify an alternate UDP voice port (higher than 1024)"
+                },
+                "default": "9987"
+			},
+			{
+				"name": "port_query",
+                "ask": {
+                    "en": "You may specify an alternate TCP query port (higher than 1024)"
+                },
+                "default": "10011"
+			},
+			{
+				"name": "port_filetr",
+                "ask": {
+                    "en": "You may specify an alternate TCP file transfer port (higher than 1024)"
+                },
+                "default": "30033"
+			}
         ]
     }
 }

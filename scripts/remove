@@ -1,82 +1,42 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
+# causes the shell to exit if any subcommand or pipeline returns a non-zero status
+set -e
 
-source _common.sh
+# Source YunoHost helpers
 source /usr/share/yunohost/helpers
 
-#=================================================
-# LOAD SETTINGS
-#=================================================
-
+# Set common variables
 app=$YNH_APP_INSTANCE_NAME
+dbname=$app
+dbuser=$app
 
-domain=$(ynh_app_setting_get $app domain)
-port=$(ynh_app_setting_get $app port)
-final_path=$(ynh_app_setting_get $app final_path)
+# See if checks succeeded
+if [[ $(ynh_app_setting_get $app chk_fail) ]]; then
+	echo "One or more checks failed. For more information, see the log."
+else
+	# System service
+	sudo systemctl stop $app.service || true
+	sudo systemctl disable $app.service || true
+	sudo rm /lib/systemd/system/$app.service || true
+	sudo systemctl daemon-reload
+	
+	# YunoHost service
+	sudo yunohost service remove $app || true
 
-#=================================================
-# STANDARD REMOVE
-#=================================================
+	# System user
+	sudo userdel -r $app || true
 
-ynh_package_remove emby-server
+	# Server root folder
+	# TODO: also remove backup path or tell user to manually remove
+	#sudo rm -rf "$(ynh_app_setting_get $app server_root)" || true
 
-#=================================================
-# REMOVE DEPENDENCIES
-#=================================================
+	# Remove firewall rules
+	# TODO: Get these from ts3server.ini
+	sudo yunohost firewall disallow --no-reload UDP 9987
+	sudo yunohost firewall disallow --no-reload TCP 10011
+	sudo yunohost firewall disallow TCP 30033
 
-# Remove metapackage and its dependencies
-#ynh_remove_app_dependencies
-
-#=================================================
-# REMOVE APP MAIN DIR
-#=================================================
-
-# Remove the app directory securely
-ynh_secure_remove "$final_path"
-
-#=================================================
-# REMOVE NGINX CONFIGURATION
-#=================================================
-
-# Remove the dedicated nginx config
-ynh_remove_nginx_config
-
-#=================================================
-# CLOSE A PORT
-#=================================================
-
-if yunohost firewall list | grep -q "\- $port$"
-then
-	echo "Close port $port" >&2
-	yunohost firewall disallow TCP $port 2>&1
+	# MariaDB database
+	ynh_mysql_drop_db "$dbname" 2>/dev/null || true
 fi
-
-#=================================================
-# SPECIFIC REMOVE
-#=================================================
-# REMOVE THE CRON FILE
-#=================================================
-
-# Remove a cron file
-ynh_secure_remove "/etc/cron.d/$app"
-
-# Remove a directory securely
-ynh_secure_remove "/etc/apt/sources.list.d/onlyoffice.list"
-
-
-# Remove the log files
-ynh_secure_remove "/var/log/$app/"
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# REMOVE DEDICATED USER
-#=================================================
-
-# Delete a system user
-ynh_system_user_delete $app
