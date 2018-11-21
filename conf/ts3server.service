@@ -3,13 +3,13 @@ Description=TeamSpeak 3 Server
 After=network.target
 
 [Service]
-WorkingDirectory=/home/yunohost.app/ts3server
+WorkingDirectory=/home/yunohost.app/ts3server/server
 User=teamspeak
 Group=teamspeak
 Type=forking
-ExecStart=/home/yunohost.app/ts3server/ts3server_startscript.sh start inifile=ts3server.ini
-ExecStop=/home/yunohost.app/ts3server/ts3server_startscript.sh stop
-PIDFile=/home/yunohost.app/ts3server/ts3server.pid
+ExecStart=/home/yunohost.app/ts3server/server/ts3server_startscript.sh start inifile=ts3server.ini
+ExecStop=/home/yunohost.app/ts3server/server/ts3server_startscript.sh stop
+PIDFile=/home/yunohost.app/ts3server/server/ts3server.pid
 RestartSec=15
 Restart=always
 

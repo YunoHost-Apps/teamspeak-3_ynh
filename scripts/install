@@ -181,7 +181,7 @@ sudo chmod 750 "$app_root"
 sudo find ${app_root}/ -type d -print0 | sudo xargs -0 chmod 750
 sudo find ${app_root}/ -type f -print0 | sudo xargs -0 chmod 640
 sudo find ${app_root}/ -type f -name "*.sh" -print0 -o -name "ts3server" -print0 | sudo xargs -0 chmod 750
-touch ${app_root}/.ts3server_license_accepted
+touch ${app_root}/server/.ts3server_license_accepted
 
 #=================================================
 # NGINX CONFIGURATION
