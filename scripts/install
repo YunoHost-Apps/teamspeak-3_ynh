@@ -93,8 +93,8 @@ ynh_app_setting_set $app port $port
 
 mkdir /opt/teamspeak
 mkdir /var/www/$path_url
-wget http://dl.4players.de/ts/releases/3.1.1/teamspeak3-server_linux_amd64-3.1.1.tar.bz2
-tar xvf teamspeak3-server_linux_amd64-3.1.1.tar.bz2
+wget http://dl.4players.de/ts/releases/3.5.0/teamspeak3-server_linux_amd64-3.5.0.tar.bz2
+tar xvf teamspeak3-server_linux_amd64-3.5.0.tar.bz2
 cd teamspeak3-server_linux_amd64 && mv * /opt/teamspeak && cd .. && rm -rf teamspeak3*
 touch /opt/teamspeak/.ts3server_license_accepted
 
