@@ -1,10 +1,17 @@
 [Unit]
-Description=Teamspeak 3 Server
-After=network.target mysql.service
+Description=TeamSpeak 3 Server
+After=network.target
 
 [Service]
-User=TS_USER
-ExecStart=SERVER_ROOT/ts3server_minimal_runscript.sh start inifile=ts3server.ini
+WorkingDirectory=/home/yunohost.app/ts3server
+User=teamspeak
+Group=teamspeak
+Type=forking
+ExecStart=/home/yunohost.app/ts3server/ts3server_startscript.sh start inifile=ts3server.ini
+ExecStop=/home/yunohost.app/ts3server/ts3server_startscript.sh stop
+PIDFile=/home/yunohost.app/ts3server/ts3server.pid
+RestartSec=15
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
