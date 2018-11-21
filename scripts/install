@@ -82,13 +82,15 @@ yunohost firewall allow --no-upnp UDP $port 2>&1
 ynh_app_setting_set $app port $port
 
 #==============================================
-# INSTALL JAVA
+# INSTALL NTP
 #==============================================
 
-#ynh_package_install openjdk-8-jre-headless
+ynh_package_install ntp ntpdate
+ntpdate pool.ntp.org
+service ntp start
 
 #==============================================
-# INSTALL JDOWNLOADER
+# INSTALL TEAMSPEAK
 #==============================================
 
 mkdir /opt/teamspeak
