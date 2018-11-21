@@ -8,9 +8,8 @@
 	"url": "http://teamspeak.com/",
 	"license": "free",
 	"maintainer": {
-		"name": "MidgetMob",
-		"email": "jschoulzy@gmail.com",
-		"url": "https://github.com/MidgetMob"
+		"name": "liberodark",
+		"email": "liberodark@gmail.com",
 	},
 	"requirements": {
 		"yunohost": ">= 2.4.2"
