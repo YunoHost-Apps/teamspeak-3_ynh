@@ -1,0 +1,16 @@
+[Unit]
+Description=TeamSpeak 3 Server
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/teamspeak
+User=TS_USER
+Type=forking
+ExecStart=/opt/teamspeak/ts3server_startscript.sh start inifile=ts3server.ini
+ExecStop=/opt/teamspeak/ts3server_startscript.sh stop
+PIDFile=/opt/teamspeak/ts3server/server/ts3server.pid
+RestartSec=15
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
