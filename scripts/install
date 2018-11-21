@@ -81,8 +81,11 @@ port1=$(ynh_find_port 30033)
 port2=$(ynh_find_port 10011)
 # Open this port
 yunohost firewall allow --no-upnp UDP $port 2>&1
-yunohost firewall allow --no-upnp TCP $port1 $port2 2>&1
-ynh_app_setting_set $app port $port $port1 $port2
+yunohost firewall allow --no-upnp TCP $port1 2>&1
+yunohost firewall allow --no-upnp TCP $port2 2>&1
+ynh_app_setting_set $app port $port
+ynh_app_setting_set $app port1 $port1
+ynh_app_setting_set $app port2 $port2
 
 #==============================================
 # INSTALL NTP
