@@ -1,13 +1,13 @@
 {
-    "name": "JDownloader",
-    "id": "jdownloader",
+    "name": "TeamSpeak",
+    "id": "teamspeak",
     "packaging_format": 1,
     "description": {
-        "en": "JDownloader package for YunoHost.",
-        "fr": "JDownloader pour YunoHost."
+        "en": "TeamSpeak package for YunoHost.",
+        "fr": "TeamSpeak pour YunoHost."
     },
     "version": "2.0",
-    "url": "http://jdownloader.org/",
+    "url": "http://teamspeak.com/",
     "license": "free",
     "maintainer": {
         "name": "liberodark",
@@ -27,8 +27,8 @@
                 "name": "domain",
                 "type": "domain",
                 "ask": {
-                    "en": "Choose a domain name for JDownloader",
-                    "fr": "Choisissez un nom de domaine pour JDownloader"
+                    "en": "Choose a domain name for TeamSpeak",
+                    "fr": "Choisissez un nom de domaine pour TeamSpeak"
                 },
                 "example": "example.com"
             },
@@ -37,11 +37,11 @@
                 "name": "path",
                 "type": "path",
                 "ask": {
-                    "en": "Choose a path for JDownloader /jd is accepted",
-                    "fr": "Choisissez un chemin pour JDownloader /jd est accepté"
+                    "en": "Choose a path for TeamSpeak /jd is accepted",
+                    "fr": "Choisissez un chemin pour TeamSpeak /jd est accepté"
                 },
-                "example": "/jd",
-                "default": "/jd"
+                "example": "/ts",
+                "default": "/ts"
             },
             
             {
