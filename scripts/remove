@@ -52,8 +52,9 @@ ynh_secure_remove "$final_path"
 
 if yunohost firewall list | grep -q "\- $port$"
 then
-	echo "Close port $port" >&2
+	echo "Close port $port $port1 $port2" >&2
 	yunohost firewall disallow UDP $port 2>&1
+	yunohost firewall disallow TCP $port1 $port2 2>&1
 fi
 
 #=================================================

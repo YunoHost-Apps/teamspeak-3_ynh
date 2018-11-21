@@ -77,9 +77,12 @@ ynh_app_setting_set $app is_public $is_public
 
 # Find a free port
 port=$(ynh_find_port 9987)
+port1=$(ynh_find_port 30033)
+port2=$(ynh_find_port 10011)
 # Open this port
 yunohost firewall allow --no-upnp UDP $port 2>&1
-ynh_app_setting_set $app port $port
+yunohost firewall allow --no-upnp TCP $port1 $port2 2>&1
+ynh_app_setting_set $app port $port $port1 $port2
 
 #==============================================
 # INSTALL NTP
