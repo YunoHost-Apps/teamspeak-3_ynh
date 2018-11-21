@@ -30,7 +30,7 @@ final_path=$(ynh_app_setting_get $app final_path)
 #=================================================
 
 # Remove metapackage and its dependencies
-ynh_remove_app_dependencies
+#ynh_remove_app_dependencies
 
 #=================================================
 # REMOVE APP MAIN DIR
@@ -67,6 +67,8 @@ ynh_secure_remove "/etc/cron.d/$app"
 
 # Remove a directory securely
 ynh_secure_remove "/opt/teamspeak"
+ynh_secure_remove "/var/www/$path_url"
+ynh_secure_remove "/etc/systemd/system/teamspeak.service"
 
 
 # Remove the log files
