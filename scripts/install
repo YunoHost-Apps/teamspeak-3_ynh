@@ -148,30 +148,30 @@ extract_ts3server $arch "$server_root" $app
 
 # Write values to config templates
 # TODO: determine if I want to only fill out used template
-sed -i "s@DBUSER@$dbuser@g" ../config/ts3db_mariadb.ini
-sed -i "s@DBPW@$dbpass@g" ../config/ts3db_mariadb.ini
-sed -i "s@APP@$app@g" ../config/ts3db_mariadb.ini
-sed -i "s@TS_USER@$dbuser@g" ../config/ts3server.service
-sed -i "s@SERVER_ROOT@$server_root@g" ../config/ts3server.service
-sed -i "s@PT_VOICE@${ports[voice]}@g" ../config/ts3server_mariadb.ini
-sed -i "s@PT_QUERY@${ports[query]}@g" ../config/ts3server_mariadb.ini
-sed -i "s@PT_FILE@${ports[filetr]}@g" ../config/ts3server_mariadb.ini
-sed -i "s@PT_VOICE@${ports[voice]}@g" ../config/ts3server_sqlite.ini
-sed -i "s@PT_QUERY@${ports[query]}@g" ../config/ts3server_sqlite.ini
-sed -i "s@PT_FILE@${ports[filetr]}@g" ../config/ts3server_sqlite.ini
+sed -i "s@DBUSER@$dbuser@g" ../conf/ts3db_mariadb.ini
+sed -i "s@DBPW@$dbpass@g" ../conf/ts3db_mariadb.ini
+sed -i "s@APP@$app@g" ../conf/ts3db_mariadb.ini
+sed -i "s@TS_USER@$dbuser@g" ../conf/ts3server.service
+sed -i "s@SERVER_ROOT@$server_root@g" ../conf/ts3server.service
+sed -i "s@PT_VOICE@${ports[voice]}@g" ../conf/ts3server_mariadb.ini
+sed -i "s@PT_QUERY@${ports[query]}@g" ../conf/ts3server_mariadb.ini
+sed -i "s@PT_FILE@${ports[filetr]}@g" ../conf/ts3server_mariadb.ini
+sed -i "s@PT_VOICE@${ports[voice]}@g" ../conf/ts3server_sqlite.ini
+sed -i "s@PT_QUERY@${ports[query]}@g" ../conf/ts3server_sqlite.ini
+sed -i "s@PT_FILE@${ports[filetr]}@g" ../conf/ts3server_sqlite.ini
 
 # Config file and necessary plugin installation
 if [[ $dbtype == "MariaDB" ]]; then
 	sudo cp "${server_root}/redist/libmariadb.so.2" "${server_root}/libmariadb.so.2"
-	sudo cp ../config/ts3db_mariadb.ini "${server_root}/ts3db_mariadb.ini"
-	sudo cp ../config/ts3server_mariadb.ini "${server_root}/ts3server.ini"
+	sudo cp ../conf/ts3db_mariadb.ini "${server_root}/ts3db_mariadb.ini"
+	sudo cp ../conf/ts3server_mariadb.ini "${server_root}/ts3server.ini"
 else
-	sudo cp ../config/ts3server_sqlite.ini "${server_root}/ts3server.ini"
+	sudo cp ../conf/ts3server_sqlite.ini "${server_root}/ts3server.ini"
 fi
 
 # Copy service file to respective location
 # TODO: Maybe replace with init.d
-sudo cp ../config/${app}.service /lib/systemd/system/${app}.service
+sudo cp ../conf/${app}.service /lib/systemd/system/${app}.service
 sudo systemctl daemon-reload
 
 
