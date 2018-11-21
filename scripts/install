@@ -13,18 +13,19 @@ source /usr/share/yunohost/helpers
 # MANAGE SCRIPT FAILURE
 #=================================================
 
-ynh_clean_setup () {
+#ynh_clean_setup () {
 	### Remove this function if there's nothing to clean before calling the remove script.
-	true
-}
+#	true
+#}
 # Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
+#ynh_abort_if_errors
 
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
 # Retrieve arguments
+app=$YNH_APP_INSTANCE_NAME
 admin=$YNH_APP_ARG_ADMIN
 arch=$YNH_APP_ARG_ARCH
 dbtype=$YNH_APP_ARG_DBTYPE
@@ -50,7 +51,6 @@ server_root="${app_root}/server"
 ### The app instance name is probably what interests you most, since this is
 ### guaranteed to be unique. This is a good unique identifier to define installation path,
 ### db names, ...
-app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
 # FIND AND OPEN A PORT
