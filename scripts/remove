@@ -67,7 +67,7 @@ ynh_secure_remove "/etc/cron.d/$app"
 
 # Remove a directory securely
 ynh_secure_remove "/opt/teamspeak"
-ynh_secure_remove "/var/www/$path_url"
+ynh_secure_remove "/var/www/ts"
 ynh_secure_remove "/etc/systemd/system/teamspeak.service"
 
 

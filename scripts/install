@@ -116,7 +116,7 @@ ynh_add_nginx_config
 # MODIFY A CONFIG FILE
 #=================================================
 
-cp -a ../conf/jdownloader.service /etc/systemd/system/teamspeak.service
+cp -a ../conf/teamspeak.service /etc/systemd/system/teamspeak.service
 cp -a ../conf/dark.html /var/www/$path_url/index.html
 
 #=================================================
