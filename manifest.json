@@ -9,7 +9,7 @@
 	"license": "free",
 	"maintainer": {
 		"name": "liberodark",
-		"email": "liberodark@gmail.com",
+		"email": "liberodark@gmail.com"
 	},
 	"requirements": {
 		"yunohost": ">= 2.4.2"
