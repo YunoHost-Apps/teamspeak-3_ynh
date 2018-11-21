@@ -23,7 +23,7 @@ final_path=$(ynh_app_setting_get $app final_path)
 # STANDARD REMOVE
 #=================================================
 
-ynh_package_remove openjdk-8-jre-headless
+#ynh_package_remove openjdk-8-jre-headless
 
 #=================================================
 # REMOVE DEPENDENCIES
@@ -53,7 +53,7 @@ ynh_secure_remove "$final_path"
 if yunohost firewall list | grep -q "\- $port$"
 then
 	echo "Close port $port" >&2
-	yunohost firewall disallow TCP $port 2>&1
+	yunohost firewall disallow UDP $port 2>&1
 fi
 
 #=================================================
@@ -66,7 +66,7 @@ fi
 ynh_secure_remove "/etc/cron.d/$app"
 
 # Remove a directory securely
-ynh_secure_remove "/opt/jdownloader"
+ynh_secure_remove "/opt/teamspeak"
 
 
 # Remove the log files
