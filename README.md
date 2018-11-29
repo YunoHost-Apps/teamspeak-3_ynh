@@ -1,6 +1,8 @@
 # TeamSpeak 3 app for YunoHost
 TeamSpeak 3 Server
 
+# IS IN DEV
+
 - [Yunohost project](https://yunohost.org)
 - [TeamSpeak website](https://www.teamspeak.com/)
 
