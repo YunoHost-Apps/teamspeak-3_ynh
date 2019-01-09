@@ -26,3 +26,16 @@ TeamSpeak 3 Server
 
         $ sudo yunohost app upgrade --verbose example -u https://github.com/YunoHost-Apps/teamspeak-3_ynh
 
+
+
+### This package is non-free:
+
+By installing this application you accept the terms of use specific to this application!
+Neither the packager nor YunoHost can be held responsible for any misuse of this application or failure of your server.
+You therefore accept the risks of using your data.
+
+### Ce paquet est non-free:
+
+En installant cette application vous acceptez les conditions d'utilisation spécifique à cette application !
+Ni le packager, ni YunoHost ne pourra etre tenue réponsable d'une mauvaise utilisation de cette application ou d'une défaillance de votre server.
+Vous accepté donc les risques d'utilisations de vos données.
