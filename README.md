@@ -37,5 +37,5 @@ You therefore accept the risks of using your data.
 ### Ce paquet est non-free:
 
 En installant cette application vous acceptez les conditions d'utilisation spécifique à cette application !
-Ni le packager, ni YunoHost ne pourra etre tenue réponsable d'une mauvaise utilisation de cette application ou d'une défaillance de votre server.
+Ni le packager, ni YunoHost ne pourra etre tenue réponsable d'une mauvaise utilisation de cette application ou d'une défaillance de votre serveur.
 Vous accepté donc les risques d'utilisations de vos données.
