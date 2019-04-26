@@ -8,7 +8,7 @@ User=TS_USER
 Type=forking
 ExecStart=SERVER_ROOT/ts3server_startscript.sh start inifile=ts3server.ini
 ExecStop=SERVER_ROOT/ts3server_startscript.sh stop
-PIDFile=SERVER_ROOT/ts3server/server/ts3server.pid
+PIDFile=SERVER_ROOT/ts3server.pid
 RestartSec=15
 Restart=always
 
