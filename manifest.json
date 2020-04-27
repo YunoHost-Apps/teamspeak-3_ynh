@@ -6,7 +6,7 @@
 		"en": "Cross-platform voice communication server"
 	},
 	"url": "http://teamspeak.com/",
-	"license": "free",
+	"license": "non-free",
 	"maintainer": {
 		"name": "MidgetMob",
 		"email": "jschoulzy@gmail.com",
