@@ -16,16 +16,16 @@ if [[ $(ynh_app_setting_get $app chk_fail) ]]; then
 	echo "One or more checks failed. For more information, see the log."
 else
 	# System service
-	sudo systemctl stop $app.service || true
-	sudo systemctl disable $app.service || true
-	sudo rm /lib/systemd/system/$app.service || true
-	sudo systemctl daemon-reload
+	systemctl stop $app.service || true
+	systemctl disable $app.service || true
+	rm /lib/systemd/system/$app.service || true
+	systemctl daemon-reload
 	
 	# YunoHost service
-	sudo yunohost service remove $app || true
+	yunohost service remove $app || true
 
 	# System user
-	sudo userdel -r $app || true
+	userdel -r $app || true
 
 	# Server root folder
 	# TODO: also remove backup path or tell user to manually remove
@@ -33,9 +33,9 @@ else
 
 	# Remove firewall rules
 	# TODO: Get these from ts3server.ini
-	sudo yunohost firewall disallow --no-reload UDP 9987
-	sudo yunohost firewall disallow --no-reload TCP 10011
-	sudo yunohost firewall disallow TCP 30033
+	yunohost firewall disallow --no-reload UDP 9987
+	yunohost firewall disallow --no-reload TCP 10011
+	yunohost firewall disallow TCP 30033
 
 	# MariaDB database
 	ynh_mysql_drop_db "$dbname" 2>/dev/null || true
