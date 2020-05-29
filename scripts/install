@@ -82,14 +82,14 @@ done
 
 # Helps keep removal script simpler and more accurate by removing
 #  the need for checks in BOTH install and remove scripts
-ynh_app_setting_set $app chk_fail 0
+ynh_app_setting_set "$app" chk_fail 0
 
 # YunoHost admin user
-ynh_user_exists $admin \
+ynh_user_exists "$admin" \
 || ynh_die "The chosen admin user does not exist."
 
 # System account user
-ynh_system_user_exists $app \
+ynh_system_user_exists "$app" \
 && ynh_die "$app system user account already exists. You should safely remove the user account before installing this app."
 
 # Server root directory
@@ -102,7 +102,7 @@ ynh_system_user_exists $app \
 #=================================================
 
 # TODO: check if user exists (to prevent deletion in remove script)
-ynh_mysql_execute_as_root '' $dbname > /dev/null 2>&1 \
+ynh_mysql_execute_as_root '' "$dbname" > /dev/null 2>&1 \
 && ynh_die "SQL database already exists. You should safely delete it before installing this app."
 
 #=================================================
@@ -110,41 +110,41 @@ ynh_mysql_execute_as_root '' $dbname > /dev/null 2>&1 \
 #=================================================
 
 # Remove checks setting as it's unecessary - setup should run perfectly
-ynh_app_setting_delete $app chk_fail
+ynh_app_setting_delete "$app" chk_fail
 
 #==============================================
 # START CONFIGURATION
 #==============================================
 
 # Admin user
-ynh_app_setting_set $app admin $admin
+ynh_app_setting_set "$app" admin "$admin"
 
 # System account user
-sudo useradd -c "$app system account" -d "$server_root" --system --user-group $app \
+sudo useradd -c "$app system account" -d "$server_root" --system --user-group "$app" \
 || ynh_die "Unable to create $app system account."
 
 # Server root directory (must set ownership before extraction)
 sudo mkdir -p "$server_root"
-sudo chown -R $app: "$server_root"
-ynh_app_setting_set $app server_root "$server_root"
+sudo chown -R "$app": "$server_root"
+ynh_app_setting_set "$app" server_root "$server_root"
 
 
 # MySQL
-ynh_mysql_create_db $dbname $dbuser $dbpass
-ynh_app_setting_set $app mysqlpwd $dbpass
+ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
+ynh_app_setting_set "$app" mysqlpwd "$dbpass"
 
 
 # Ports
-sudo yunohost firewall allow --no-reload UDP ${ports[voice]}
-sudo yunohost firewall allow --no-reload TCP ${ports[query]}
-sudo yunohost firewall allow TCP ${ports[filetr]}
+sudo yunohost firewall allow --no-reload UDP "${ports[voice]}"
+sudo yunohost firewall allow --no-reload TCP "${ports[query]}"
+sudo yunohost firewall allow TCP "${ports[filetr]}"
 
 #==============================================
 # INSTALL TEAMSPEAK
 #==============================================
 
 # Copy source files to server root
-extract_ts3server $arch "$server_root" $app
+extract_ts3server "$arch" "$server_root" "$app"
 
 # Write values to config templates
 # TODO: determine if I want to only fill out used template
@@ -171,17 +171,17 @@ fi
 
 # Copy service file to respective location
 # TODO: Maybe replace with init.d
-sudo cp ../conf/${app}.service /lib/systemd/system/${app}.service
+sudo cp ../conf/"${app}".service /lib/systemd/system/"${app}".service
 sudo systemctl daemon-reload
 
 
 # Finalize ownerships and permissions
-sudo chown -R $app: "$app_root"
+sudo chown -R "$app": "$app_root"
 sudo chmod 750 "$app_root"
-sudo find ${app_root}/ -type d -print0 | sudo xargs -0 chmod 750
-sudo find ${app_root}/ -type f -print0 | sudo xargs -0 chmod 640
-sudo find ${app_root}/ -type f -name "*.sh" -print0 -o -name "ts3server" -print0 | sudo xargs -0 chmod 750
-sudo touch ${server_root}/.ts3server_license_accepted
+sudo find "${app_root}"/ -type d -print0 | sudo xargs -0 chmod 750
+sudo find "${app_root}"/ -type f -print0 | sudo xargs -0 chmod 640
+sudo find "${app_root}"/ -type f -name "*.sh" -print0 -o -name "ts3server" -print0 | sudo xargs -0 chmod 750
+sudo touch "${server_root}"/.ts3server_license_accepted
 
 #=================================================
 # NGINX CONFIGURATION
@@ -197,16 +197,16 @@ sudo touch ${server_root}/.ts3server_license_accepted
 #=================================================
 
 # Enable and start service
-sudo systemctl enable ${app}.service
-sudo yunohost service add $app -l "${server_root}/logs/ts3server_1.log" "${server_root}/logs/ts3server_0.log"
+sudo systemctl enable "${app}".service
+sudo yunohost service add "$app" -l "${server_root}/logs/ts3server_1.log" "${server_root}/logs/ts3server_0.log"
 
 # Set serveradmin password and start
 sudo sh -c "echo serveradmin_password=${sapass} >> ${server_root}/ts3server.ini" \
       || ynh_die "Could not set serveradmin password in config file. Aborting."
-sudo yunohost service start $app
+sudo yunohost service start "$app"
 # Remove password from config file
 sudo sed -i '/serveradmin_password/d' "${server_root}/ts3server.ini"
-ynh_app_setting_set $app sapass $sapass
+ynh_app_setting_set "$app" sapass "$sapass"
 
 # Let's use the initial log file to get the admin token
 # Wait for generation of file
