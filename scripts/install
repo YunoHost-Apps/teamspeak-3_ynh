@@ -162,26 +162,26 @@ sed -i "s@PT_FILE@${ports[filetr]}@g" ../conf/ts3server_sqlite.ini
 
 # Config file and necessary plugin installation
 if [[ $dbtype == "MariaDB" ]]; then
-	sudo cp "${server_root}/redist/libmariadb.so.2" "${server_root}/libmariadb.so.2"
-	sudo cp ../conf/ts3db_mariadb.ini "${server_root}/ts3db_mariadb.ini"
-	sudo cp ../conf/ts3server_mariadb.ini "${server_root}/ts3server.ini"
+	cp -a "${server_root}/redist/libmariadb.so.2" "${server_root}/libmariadb.so.2"
+	cp -a ../conf/ts3db_mariadb.ini "${server_root}/ts3db_mariadb.ini"
+	cp -a ../conf/ts3server_mariadb.ini "${server_root}/ts3server.ini"
 else
-	sudo cp ../conf/ts3server_sqlite.ini "${server_root}/ts3server.ini"
+	cp -a ../conf/ts3server_sqlite.ini "${server_root}/ts3server.ini"
 fi
 
 # Copy service file to respective location
 # TODO: Maybe replace with init.d
-sudo cp ../conf/"${app}".service /lib/systemd/system/"${app}".service
-sudo systemctl daemon-reload
+cp ../conf/"${app}".service /lib/systemd/system/"${app}".service
+systemctl daemon-reload
 
 
 # Finalize ownerships and permissions
-sudo chown -R "$app": "$app_root"
-sudo chmod 750 "$app_root"
-sudo find "${app_root}"/ -type d -print0 | sudo xargs -0 chmod 750
-sudo find "${app_root}"/ -type f -print0 | sudo xargs -0 chmod 640
-sudo find "${app_root}"/ -type f -name "*.sh" -print0 -o -name "ts3server" -print0 | sudo xargs -0 chmod 750
-sudo touch "${server_root}"/.ts3server_license_accepted
+chown -R "$app": "$app_root"
+chmod 750 "$app_root"
+find "${app_root}"/ -type d -print0 | sudo xargs -0 chmod 750
+find "${app_root}"/ -type f -print0 | sudo xargs -0 chmod 640
+find "${app_root}"/ -type f -name "*.sh" -print0 -o -name "ts3server" -print0 | sudo xargs -0 chmod 750
+touch "${server_root}"/.ts3server_license_accepted
 
 #=================================================
 # NGINX CONFIGURATION
